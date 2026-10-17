@@ -69,7 +69,7 @@ If you want to resume one specific chat, that's the Session pickup playbook belo
 When another agent (or you, last week) left a branch mid-flight:
 
 ```text
-/poteto-mode take over this branch. read the decision log, figure out what's done, and continue from there. don't redo finished work.
+/poteto-mode take over this branch. read the prior chat, figure out what's done, and continue from there. don't redo finished work.
 ```
 
 The [Session pickup playbook](../../skills/poteto-mode/playbooks/session-pickup.md) treats the prior trail as authoritative. It reconstructs the branch state and decisions, names the resume point, and verifies inherited claims against the original goal instead of re-deriving everything from scratch.

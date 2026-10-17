@@ -92,14 +92,6 @@ You get faster, slower, no measurable difference, or inconclusive, with the run 
 
 The fix lands in the repo as architecture, a type, a lint, or a test, so the next agent can't make the mistake.
 
-## Keep a run honest while you're away
-
-```text
-im going to bed, keep going autonomously until every fixture passes. do not stop. keep a decision log i can audit in the morning.
-```
-
-The full contract is on the [overnight page](./07-overnight.md). The short form works once the task and finish condition are already in the conversation.
-
 ## Redirect a drifting run
 
 Steering prompts are one line:
@@ -129,7 +121,7 @@ That's the whole prompt. [`/bro`](../../skills/bro/SKILL.md) restates the last m
 ## The pitfalls
 
 - **Enumerating skills in the prompt.** "use /how then /architect then /arena" reorders steps the playbook already sequences. State the goal and constraints. Name a skill only to override a default.
-- **A vague finish condition.** "make it better" gives `/loop` nothing to check. Give a command or artifact that can pass or fail.
+- **A vague finish condition.** "make it better" gives the agent nothing to check. Give a command or artifact that can pass or fail.
 - **Leading with your theory of the cause.** The agent searches wherever you pointed. Ask it to restate the problem first, then share your hunch.
 - **Taking the first design.** One attempt locks in the first shape the model thought of. Ask for prototypes or `/architect` and pick from evidence.
 - **Polishing an abstract plan.** Adversarial review of a plan with no code behind it invents risks that will never happen. Settle the open questions with prototypes, then review what got built.
