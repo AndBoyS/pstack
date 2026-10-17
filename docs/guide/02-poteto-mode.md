@@ -16,7 +16,7 @@ flowchart TD
     D -->|New behavior| G[Feature]
     D -->|Structure only| H[Refactoring]
     D -->|Measured slowness| I[Perf issue]
-    D -->|Large work or no match| J[Design the steps first]
+    D -->|Large work or no match| J[Design the steps, keeping any matched playbook's steps]
     E --> K[Verify and report]
     F --> K
     G --> K
