@@ -106,7 +106,7 @@ pstack has no planning skill, on purpose. When you do want a written plan, ask f
 /poteto-mode turn this design into a plan. small verifiable PRs, each with its own verification steps.
 ```
 
-No playbook covers a written plan. `/poteto-mode` designs the steps itself, with done stated as a check that can pass or fail, the riskiest unknown first, and the check built before the work. Ask for each PR's proof in the prompt. A passing test suite alone doesn't count as that proof.
+`/poteto-mode` designs the steps itself, with done stated as a check that can pass or fail and the riskiest unknown first. A plan request stops at the plan. Ask for each PR's proof in the prompt. A passing test suite alone doesn't count as that proof.
 
 For a migration, state the bar in the prompt:
 

@@ -34,7 +34,7 @@ You pick from things that run, not from descriptions. The agent answers its own 
 /poteto-mode turn this design into a plan. small verifiable PRs, each with its own proof.
 ```
 
-Ask only after the design settles. The plan is the deliverable, and it names the playbook that will execute it.
+Ask only after the design settles. The plan is the deliverable, and the agent stops there.
 
 ## Get a second opinion on a design
 
@@ -126,7 +126,7 @@ That's the whole prompt. [`/bro`](../../skills/bro/SKILL.md) restates the last m
 - **Taking the first design.** One attempt locks in the first shape the model thought of. Ask for prototypes or `/architect` and pick from evidence.
 - **Polishing an abstract plan.** Adversarial review of a plan with no code behind it invents risks that will never happen. Settle the open questions with prototypes, then review what got built.
 - **Parallel agents in one worktree.** They overwrite each other and the diff becomes archaeology. Run them as cloud agents, or say "own worktree per attempt".
-- **Looping before you trust the loop.** A loop that can't verify its own work only makes unchecked work faster. Get the verification skill working first.
+- **Adding agents before verification works.** More agents without a working check only make unchecked work faster. Get the verification skill working first.
 - **Trusting an unvetted number.** A warm cache or a skipped code path can fake a speedup. Run `/benchmark-checklist` before the number goes anywhere.
 - **Correcting the same mistake by hand.** A correction in chat helps one run. `/correct` fixes the repo so no later run repeats it.
 - **Using `/arena` for coverage.** `/arena` repeats one design or code brief, then picks a base and grafts the best parts. `/swarm` partitions slices or declared race arms and aggregates one report.
