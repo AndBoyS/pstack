@@ -2,7 +2,7 @@
 
 Editing code you don't understand is how subtle regressions ship, and that's as true for the agent as for you. Agents usually fail in one of two ways. They misread what you want, or they don't have the context to do the work right. [What goes in a prompt](./02-poteto-mode.md#what-goes-in-a-prompt) handles the first. This page handles the second.
 
-pstack gives you four ways in. `/how` explains what the code does now. `/why` digs up the reasons it's shaped that way. `/teach` blends both into one explanation. `/recall` rebuilds your own recent context on a topic. Each one also makes the agent explain itself in words you can check. That's how you supervise an agent that may know the code better than you do.
+pstack gives you three ways in. `/how` explains what the code does now. `/why` digs up the reasons it's shaped that way. `/teach` blends both into one explanation. Each one also makes the agent explain itself in words you can check. That's how you supervise an agent that may know the code better than you do.
 
 ![A detective studies a machine blueprint with a magnifying glass while robots fetch case files; the evidence board behind her links clues under /how and /why.](./images/understanding.jpg)
 
@@ -49,20 +49,6 @@ It works on the agent's own choices too:
 ```
 
 Teaching helps the agent as much as you. An agent that has to explain its work must read the code and back each claim with evidence, instead of stating it confidently and moving on.
-
-## Rebuild your own context with `/recall`
-
-```text
-/recall catch me up on the export work from last week
-```
-
-[`/recall`](../../skills/recall/SKILL.md) mines your own recent chats plus the shared record (issues, prior fixes, errors still firing) and hands back a brief on where things stand and what's next. Your old chats hold context that a fresh agent lacks, so start new work on an old topic by loading it first, then hand over the new input:
-
-```text
-/recall my work on the virtualized list from yesterday, then read this bug report.
-```
-
-If you want to resume one specific chat, that's the Session pickup playbook below, not `/recall`.
 
 ## Take over prior work with Session pickup
 
