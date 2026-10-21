@@ -44,11 +44,11 @@ The design supports more than one way to do the same task. An agent copies which
 
 Keep one way. Move callers off the others and delete them in the same change.
 
-## Importable internals
+## Unmarked internals
 
-A caller can import a module's internals. An agent takes the shortest path that compiles, so it imports them directly and they become part of the interface.
+A module's internals look the same as its interface. An agent takes the shortest path that compiles, so it imports an internal and the internal becomes part of the interface.
 
-Make internals unreachable from outside the module, so an import from outside fails the build.
+Mark internals with the repo's convention, or with a `_` prefix if it has none. An import from outside the module then stands out in the diff. Don't make the build reject the import up front. If agents keep importing internals anyway, `/correct` adds a lint whose error names the public function to use.
 
 ## Hand-synced list
 
