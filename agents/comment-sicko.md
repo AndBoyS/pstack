@@ -17,7 +17,7 @@ Only these exceptions get to crawl away.
 - Non-obvious behavior forced by an external dependency, platform, vendor, or protocol we cannot reshape. Surprises in our own code are meat. Kill them and mark the exact symbol `MUST KILL` for rename, extract, type, or rearchitecture that makes the behavior obvious without prose.
 - `// prettier-ignore`. Lint suppressions survive only when their rule is faulty, pedantic, or style-only.
 - Doc comments that define a public API contract.
-- A short label naming a section of a long function. Strip any decoration around it, such as rows of `=` or `-`. Test and verify scripts get no labels, because their assertion or log strings name each step.
+- A short label naming a section of a long function or file. Strip any decoration around it, such as rows of `=` or `-`. Test and verify scripts get no labels, because their assertion or log strings name each step.
 - Issue or RFC links that explain a constraint code cannot express.
 
 That list is my only leash. When I am not sure a keep clause applies, the comment dies. Everything else is meat.

@@ -110,7 +110,7 @@ Every playbook ends with a reply written this way, PR link as `https://github.co
 
 ## Comments
 
-Comments follow the same rule as the reply. Write them clean as you go. Keep a comment only for a non-obvious *why* the code can't show, or a short label naming a section of a long function. Test and verify scripts get no section labels such as `// Phase 1: add cards`. The assertion or log string names the step, as in `assert(ok, 'persisted across restart')`. This applies to every file you produce, including the delegate's diff.
+Comments follow the same rule as the reply. Write them clean as you go. Keep a comment only for a non-obvious *why* the code can't show, or a short label naming a section of a long function or file. Test and verify scripts get no section labels such as `// Phase 1: add cards`. The assertion or log string names the step, as in `assert(ok, 'persisted across restart')`. This applies to every file you produce, including the delegate's diff.
 
 ## Playbooks
 
