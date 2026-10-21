@@ -6,7 +6,7 @@ disable-model-invocation: true
 
 # Model the Domain
 
-Encode the real domain in a data structure instead of scattering it across conditionals. A structure that matches the domain makes invalid states unrepresentable and deletes branches. Choosing it at write time is cheap. Recovering it later reads as a refactor and gets deferred.
+Encode the real domain in a data structure instead of scattering it across conditionals. A structure that matches the domain makes invalid states unrepresentable and deletes branches. When you have built this shape before, or the domain fixes it, choose the structure at write time. Recovering it later reads as a refactor and gets deferred. Otherwise name the plain shape, such as one flat struct, and revisit it once a second case shows the real one.
 
 Reach for:
 
