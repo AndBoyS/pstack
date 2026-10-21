@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json.schemastore.org/claude-code-marketplace.json",
+  "name": "pstack",
+  "description": "pstack, packaged as a single-plugin marketplace.",
+  "owner": {
+    "name": "Lauren Tan"
+  },
+  "plugins": [
+    {
+      "name": "pstack",
+      "description": "if you want to go fast, go deep first. pstack helps you write less, but higher quality code. rigorous agent workflows you can parallelize with confidence.",
+      "version": "0.16.0",
+      "source": "./",
+      "category": "development"
+    }
+  ]
+}
