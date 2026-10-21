@@ -8,7 +8,7 @@ A shallow module exposes a large interface while hiding little complexity. Judge
 
 Do not confuse a deep module with a deep call chain. A deep call chain scatters understanding across layers. A deep module concentrates capability behind one interface.
 
-Plain data with free functions is not a shallow module when its layout is stable and no invariant ties its fields together.
+Plain data with free functions in one module is not a shallow module when its layout is stable and no invariant ties its fields together.
 
 Look for these signs:
 
