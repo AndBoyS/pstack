@@ -45,7 +45,7 @@ As results come back, build a unified picture. Parse every reviewer's findings. 
 
 You are the lead reviewer, a pragmatic senior engineer, not a neutral aggregator. Read `references/lead-judgment.md` for the full framework. Put every finding in one of four buckets, with the model(s) that raised it and a one-line rationale.
 
-- **Act on**. Real issues affecting correctness, security, or maintainability given the actual goals. They would block a real PR. A pessimization on a path whose input grows counts too, such as an N+1 query or a quadratic pass where a linear one is obvious. One on a small or cold path goes under Consider.
+- **Act on**. Real issues affecting correctness, security, or maintainability given the actual goals. They would block a real PR. A pessimization on a path whose input grows counts too, such as an N+1 query or a quadratic pass where a linear one is obvious. One on a cold path, or on input that stays small, goes under Consider.
 - **Consider**. Legitimate, but you're not sure they outweigh the cost of addressing them now. Worth the user's attention.
 - **Noted**. Technically valid but not actionable. Context-dependent, micro-tuning without a measured need, or low-impact at this stage.
 - **Dismissed**. Wrong, nitpicky, or missing context, with a brief reason.
