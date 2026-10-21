@@ -49,7 +49,6 @@ alwaysApply: true
 feature, refactoring: grok-4.7-xhigh-fast
 bug-fix: grok-4.7-xhigh-fast
 perf-issue: grok-4.7-xhigh-fast
-hillclimb: grok-4.7-xhigh-fast
 judgment and prose: claude-opus-5-5-xhigh
 hardest tasks: claude-opus-5-5-xhigh
 how explorer: grok-4.7-xhigh-fast
