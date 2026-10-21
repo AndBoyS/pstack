@@ -14,7 +14,11 @@ The two most common design mistakes are taking the agent's first design and poli
 
 [`/architect`](../../skills/architect/SKILL.md) grounds itself first, running `/how` over the code the design touches and `/why` when it moves ownership or layers. Then it runs `/arena` to produce competing design sketches, with the caller's usage written first in each, followed by types, signatures, and a module map.
 
-It proceeds straight from the synthesized design into implementation.
+By default it proceeds straight from the synthesized design into implementation. If you want to see the design first, say so:
+
+```text
+/architect with checkpoint. stop and show me before implementing.
+```
 
 The design isn't sacred once code starts. If implementation shows the same workaround in unrelated places, or types that only compile with `any` or forced casts, `/architect` treats that as proof the design is wrong. It scraps the sketch and starts over instead of patching around it.
 
@@ -76,10 +80,10 @@ Never take the first design. Ask for a few, and pick from evidence you can see:
 
 The [Prototype playbook](../../skills/poteto-mode/playbooks/prototype.md) builds throwaway sketches in a scratch directory, puts the variants behind one switcher, drives each one, and captures screenshots or timings. It also works for behavior and algorithms, not just UI. Prototypes are planning with code. They let the agent answer its own open questions by running something instead of asking you, and they leave room for an option you wouldn't have thought of.
 
-The same idea scales up to a real design. Pair `/architect` with prototypes:
+The same idea scales up to a real design. Pair `/architect` with prototypes and keep a review gate:
 
 ```text
-/poteto-mode we need rate limiting for external webhooks. /architect it first, and answer open questions with prototypes.
+/poteto-mode we need rate limiting for external webhooks. /architect it first, and answer open questions with prototypes. let me review before proceeding.
 ```
 
 Don't spend reviewers on an abstract plan. `/interrogate` belongs on a diff. Point adversarial review at a plan with no code behind it and the reviewers invent theoretical risks and edge cases that will never happen. Let prototypes settle the questions, then review what got built.
