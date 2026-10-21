@@ -19,6 +19,8 @@ Reach for:
 - A queue, cache, index, graph, tree, or normalized collection where the access pattern calls for it.
 - Any other structure that fits. When none fits, work out what the code must never allow and how the data gets read, then find the structure that encodes exactly that.
 
+Use a discriminated union when the states exclude each other and carry different data, such as loading, ready, and failed. When features combine freely, use one flat struct with a field or flag for each feature. For example, an entity can be visible, solid, and animated in any mix. Code that needs one feature reads one field instead of switching over every variant. Keep the flags independent. Flags that must change together are one state, so model them as a union or a state machine. When variants share their fields and the code treats them alike, use one struct with a `kind` field.
+
 Do not force an abstraction. Prefer boring code if the current shape is already clear, local, and unlikely to grow. Be skeptical of an abstraction that adds indirection without removing branches, duplicated rules, invalid states, or lifecycle risk.
 
 The sign that you skipped this is a new feature that grows an existing if/else chain by one more branch, or a second boolean that must stay in sync with the first. Temporal decomposition is another sign. Phase-named modules repeat the same domain rules across steps.
