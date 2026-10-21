@@ -12,7 +12,7 @@ Reach for:
 
 - A state machine instead of scattered booleans, phases, or lifecycle checks.
 - A typed model instead of loose parameters or repeated shape assumptions.
-- A map or lookup table defined in one place, or a discriminated union, instead of branching spread across files.
+- A discriminated union with exhaustive switches, or a lookup table of per-variant values defined in one place, instead of unchecked branching spread across files.
 - A reducer or command/event model instead of ad hoc state mutations.
 - A module organized around one body of domain knowledge instead of a sequence such as load, validate, transform, and save. Execution order is not ownership.
 - A small module boundary that gathers repeated behavior, ownership, or invariants.
@@ -21,8 +21,8 @@ Reach for:
 
 Use a discriminated union when the states exclude each other and carry different data, such as loading, ready, and failed. When features combine freely, use one flat struct with a field or flag for each feature. For example, an entity can be visible, solid, and animated in any mix. Code that needs one feature reads one field instead of switching over every variant. Keep the flags independent. Flags that must change together are one state, so model them as a union or a state machine. When variants share their fields and the code treats them alike, use one struct with a `kind` field.
 
-A lookup table keyed by variant makes a new variant one row and a new operation an edit to every row. A union with one switch per operation makes a new operation one function and a new variant an edit to every switch. Choose for the change the code gets more often.
+Write one function per operation by default, even when more variants seem likely. That function puts every variant's code side by side, which shows what the variants share. When the variants differ only in data, such as a label or a coefficient, the function reads a lookup table keyed by variant. The table's rows hold values, not functions. When the variants differ in logic, the function switches over them. A new variant then costs a row in each table and a case in each switch. Make every table and switch exhaustive, per the **type-system-discipline** principle skill, so a missed row or case fails the build. Bundle behavior per variant, as a class or an object of functions, only when code that cannot edit this module adds variants, as plugins do.
 
 Do not force an abstraction. Prefer boring code if the current shape is already clear, local, and unlikely to grow. Be skeptical of an abstraction that adds indirection without removing branches, duplicated rules, invalid states, or lifecycle risk.
 
-The sign that you skipped this is a new feature that adds one more branch to an unchecked if/else chain, or a second boolean that must stay in sync with the first. Temporal decomposition is another sign. Phase-named modules repeat the same domain rules across steps.
+The sign that you skipped this is a new feature that adds one more branch to an unchecked if/else chain or switch, or a second boolean that must stay in sync with the first. Temporal decomposition is another sign. Phase-named modules repeat the same domain rules across steps.

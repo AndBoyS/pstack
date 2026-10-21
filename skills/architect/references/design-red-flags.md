@@ -56,4 +56,4 @@ Mark internals with the repo's convention, or with a `_` prefix if it has none. 
 
 Two or more places list the same items, and adding an item means editing every list. An agent that sees one list updates only that one.
 
-Keep one list and derive the others from it. If a list can't be derived, make the build fail when the lists disagree.
+Keep one list and derive the others from it. If a list can't be derived, make the build fail when the lists disagree. One exhaustive switch per operation is not this red flag, because the build already fails on a missing case.
