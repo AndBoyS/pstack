@@ -1,9 +1,7 @@
 ---
-name: Poteto Mode
+name: poteto-mode
 description: poteto's agent style for concise, detailed responses, deliberate subagents, unslopped prose, simple code, and verified work. Use for poteto, /poteto-mode, or requests to work in this style.
 disable-model-invocation: true
-icon: crown
-color: yellow
 ---
 
 # Poteto mode
@@ -17,17 +15,17 @@ The Principles section below grounds every trigger. In your reply, name each pri
 Remaining triggers:
 
 - Nontrivial change, architecture decision, or "are we sure?" → the **how** skill.
-- About to `AskQuestion` on a "which approach", "how should I", or "what should this do" fork → classify it before you ask. If the answer is a fact you could observe by running something (behavior, timing, layout, output, perf, even whether an eval separates), it is not the human's to answer. Sketch it via the Prototype playbook (`playbooks/prototype.md`) and let the result decide. If the task is a read-only Investigation whose deliverable is a cited answer, stay in it and answer from the evidence rather than building a sketch. Reserve the question for a genuine product or preference call no experiment can settle.
+- About to ask the user a structured question on a "which approach", "how should I", or "what should this do" fork → classify it before you ask. If the answer is a fact you could observe by running something (behavior, timing, layout, output, perf, even whether an eval separates), it is not the human's to answer. Sketch it via the Prototype playbook (`playbooks/prototype.md`) and let the result decide. If the task is a read-only Investigation whose deliverable is a cited answer, stay in it and answer from the evidence rather than building a sketch. Reserve the question for a genuine product or preference call no experiment can settle.
 - Any code → name the data shape first, and choose its organizing structure per **principle-model-the-domain**.
 - A new module, a new or changed public interface, or a move of state ownership → the **architect** skill, parallel design exploration before implementing.
 - Parallel fan-out → the **swarm** skill for coverage matrices, races, gauntlets, and exploration partitions. Use **arena** for design or code bakeoffs with base selection and grafting.
 - Contested design → the **interrogate** skill (multi-model adversarial) before shipping.
 - Nontrivial multi-step → write the throughput checkpoint (Feature step 3).
-- Any prose surface, your reply to the user included → the **unslop** skill. Write the reply per **Writing the reply**. Agent-facing prose also follows the **create-skill** skill (Cursor's built-in for authoring SKILL.md files).
+- Any prose surface, your reply to the user included → the **unslop** skill. Write the reply per **Writing the reply**. Agent-facing prose also follows the `skill-creator` skill when this session has it (Anthropic's skill for authoring SKILL.md files).
 - Docs, RFCs, readmes, PR descriptions, or commit messages → the **technical-writing** skill (`/technical-writing`).
-- Before commit → the `deslop` skill from the `cursor-team-kit` plugin (`/deslop`).
+- Before commit → the `deslop` skill (`/deslop`) when this session has it. pstack doesn't ship it.
 - Before review → the **no-comments** skill (`/no-comments`).
-- Shipping UI / IDE / CLI → the matching control skill. `cursor-team-kit` publishes `control-cli` (CLIs and TUIs) and `control-ui` (browser / Electron / web UIs). For bug fixes, reproduce first on the same surface yourself. Hand to the user only under the narrow Bug fix step 1 exception.
+- Shipping UI / IDE / CLI → drive it with the control tool this session has: a project `verify-*` skill, a `control-cli` or `control-ui` skill, a browser MCP, or a script you write. For bug fixes, reproduce first on the same surface yourself. Hand to the user only under the narrow Bug fix step 1 exception.
 - Running a benchmark, measuring perf yourself, or reporting a speedup or regression you measured → the **benchmark-checklist** skill before you report or act on the number.
 - An automated reviewer or security review bot commented → skeptical posture. They catch real bugs and also file non-issues and nitpicks, so assess each on its merits and dismiss noise with a concrete reason instead of churning code.
 - Broken skill mid-task → fix it in its own PR. Don't block. Don't silently work around it.
@@ -84,11 +82,39 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
 
 ## Subagents
 
-**Use `subagent_type: "poteto-agent"` for any subagent you spawn inside a playbook step** (code-writing delegates, ad-hoc helpers). The chat that receives `/poteto-mode` runs the playbook. Never spawn a `poteto-agent` to run the playbook itself. Routed workflow skills (`how`, `why`, `interrogate`, `reflect`, `swarm`) set their own `subagent_type` for diverse-model review. Respect what the skill prescribes, don't override to `poteto-agent`.
+pstack runs in Claude Code and OpenCode. The skills name what a spawn needs. This table names the field each tool uses.
 
-**Defaults for every `Task` call.** `run_in_background: true`, agent mode (readonly strips MCP), file pointers not inlined context, explicit model per role (configurable via `/setup-pstack`. Defaults `grok-4.7-xhigh-fast` for code, `claude-opus-5-5-xhigh` for prose and judgment). Code delegates tier by difficulty. The hardest changes (cross-cutting design, gnarly concurrency, subtle algorithms) go to your strongest judgment model (`claude-opus-5-5-xhigh`), whether the task needs judgment on vague intent or is a precisely specified sequence of steps to execute to the letter. Trivial mechanical edits go to your fast code model. Per-role lines in the `/setup-pstack` rule override these defaults and the model choices in the routed skills (`how`, `why`, `arena`, `swarm`, `architect`, `interrogate`, `reflect`). A role with no line keeps its default, and a role line of `inherit-parent` or `auto` runs that role on the parent chat model (omit Task `model`). Each code playbook's configured model comes from its line (`feature, refactoring`, `bug-fix`, or `perf-issue`), and the hardest changes read `hardest tasks`. Prose and judgment read `judgment and prose`.
+| Need | Claude Code | OpenCode |
+|---|---|---|
+| Spawn tool | `Agent` (`Task` in older builds) | `subagent` |
+| Agent type | `subagent_type` | `agent` |
+| pstack delegate | `pstack:poteto-agent` | `poteto-agent` |
+| General agent | `general-purpose` | `general` |
+| Model | `model`, an alias the tool lists, such as `opus` or `sonnet` | `model`, as `provider/model` |
+| Reasoning level | `effort` (`low`, `medium`, `high`, `xhigh`, `max`) where the tool has it | a `#variant` suffix on `model`, from the variants `tools.opencode.models` lists inside `execute` |
+| Background | the default, or `run_in_background: true` where the tool has it | `background: true` |
+| Own checkout | `isolation: "worktree"` | a worktree from `tools.opencode.worktree_create` inside `execute`, passed by path |
+| Structured question | `AskUserQuestion` | `question` |
+| Model file | `~/.claude/pstack-models.md` | `~/.config/opencode/pstack-models.md` |
+| This project's transcripts | `~/.claude/projects/<slug>/<session-id>.jsonl`, with subagents under `<session-id>/subagents/` | `opencode session list --format json` lists this project's sessions, and `opencode session export <session-id>` writes one out |
 
-**Match the model to the job.** Before each spawn, start from the role's line or default and pick the reasoning level and speed the job needs. The `/setup-pstack` budget sets each role's starting level, xhigh by default. Raise it one step, up to max, for the hardest or subtlest work. Lower it one step for judgment and two or more steps for routine work. Use fast mode only when the job is urgent, meaning CI or trunk is red or a person is blocked on the result right now. Otherwise use standard speed, the same slug without `-fast`. Verification is the exception and stays on the `swarm workers` model and speed (`grok-4.7-xhigh-fast` by default). Change only the effort level and whether the slug is fast, and keep the family the role names, so a diverse panel stays diverse. If the family has no slug at that level and speed, use its nearest slug. A role on `auto` or `inherit-parent` stays on the parent model. If the Task tool rejects the adjusted slug, do not try another adjusted slug. Use the role's line or default and say so.
+The Claude Code `<slug>` is the working directory's absolute path with every character other than a letter or digit replaced by `-`. Read only this project's transcripts. Searching every project reads private chats from unrelated work. In Claude Code, an install outside the plugin drops the `pstack:` prefix. OpenCode stops a subagent from spawning its own subagents unless `experimental.subagent_depth` allows it. A delegate that can't spawn does the spawning step itself.
+
+**Use the pstack delegate for any subagent you spawn inside a playbook step** (code-writing delegates, ad-hoc helpers). The chat that receives `/poteto-mode` runs the playbook. Never spawn a `poteto-agent` to run the playbook itself. Routed workflow skills (`how`, `why`, `interrogate`, `reflect`, `swarm`) set their own agent type for diverse-model review. Respect what the skill prescribes, don't override to `poteto-agent`.
+
+**Defaults for every spawn.** Run it in the background, pass file pointers instead of inlined context, and set the model from its role. Code delegates tier by difficulty. The hardest changes (cross-cutting design, gnarly concurrency, subtle algorithms) go to the `hardest tasks` role, whether the task needs judgment on vague intent or is a precisely specified sequence of steps to execute to the letter. Trivial mechanical edits go to the playbook's code role. Each code playbook's model comes from its role (`feature, refactoring`, `bug-fix`, or `perf-issue`). Prose and judgment use `judgment and prose`.
+
+**Model roles.** Read the model file once per session, before the first spawn. `/setup-pstack` writes it. Each line maps a role to a value. A value is a model with an optional `#<reasoning level>`, a comma-separated list of them for a panel, or `inherit-parent`. In Claude Code, the part before `#` goes in `model` and the part after goes in `effort`. In OpenCode, the whole value goes in `model`. `inherit-parent` omits `model`, so the subagent runs on the parent chat model. A role with no line, or no file, takes its default below. Role lines override the model choices in the routed skills (`how`, `why`, `arena`, `swarm`, `architect`, `interrogate`, `reflect`).
+
+| Roles | Claude Code default | OpenCode default |
+|---|---|---|
+| Code roles: `feature, refactoring`, `bug-fix`, `perf-issue`, `how explorer`, `why investigators`, `reflect tooling`, `swarm workers` | `sonnet#xhigh` | `inherit-parent` |
+| Judgment roles: `judgment and prose`, `hardest tasks`, `how explainer`, `why synthesizer`, `reflect judgment, divergent, synthesizer` | `opus#xhigh` | `inherit-parent` |
+| Panels: `arena runners`, `arena cross-judge pool`, `architect runners`, `interrogate reviewers` | `opus#xhigh, sonnet#xhigh` | `inherit-parent, inherit-parent` |
+
+A panel runs one subagent per entry, `inherit-parent` entries included, so the list length sets its size. When every entry of a panel runs on the same model, the panel has no model diversity. Say so in the reply and suggest `/setup-pstack`. If the spawn tool rejects a value, use the role's default and say so. If it rejects the default, use `inherit-parent`.
+
+**Match the model to the job.** Before each spawn, start from the role's value and pick the reasoning level the job needs. The `/setup-pstack` budget sets each role's starting level, `xhigh` by default. Raise it one step, up to `max`, for the hardest or subtlest work. Lower it one step for judgment and two or more steps for routine work. Verification is the exception and stays on the `swarm workers` value. Change only the reasoning level and keep the model the role names, so a diverse panel stays diverse. If the model doesn't accept that level, use its nearest. A role on `inherit-parent` stays on the parent model. If the spawn tool rejects the adjusted level, do not try another level. Use the role's value and say so.
 
 You own every subagent's work. Review the diff and write your own summary, don't pass through what it said. A second opinion is the same prompt against a different model. Agreement is high-signal.
 
@@ -131,6 +157,6 @@ A request for a plan ends at the plan, whatever playbook it matches. Design the 
 - **Visual parity.** Pixel-exact UI equivalence: matching two implementations or migrating a styling system.
 - **Authoring or modifying a skill.** Writing or editing a SKILL.md. File: `playbooks/authoring-a-skill.md`.
 - **Eval.** Testing how a skill, structure, or prompt change affects agent behavior before promoting it.
-- **Session pickup.** Resuming or taking over a prior agent's in-flight work from a transcript, cloud-agent URL, or pushed branch.
+- **Session pickup.** Resuming or taking over a prior agent's in-flight work from a transcript, a cloud session, or a pushed branch.
 - **Worktree and simulator cleanup.** Reclaiming local disk by pruning merged or abandoned git worktrees and stale iOS simulators ("what's using my disk", "clean up worktrees", "prune safe-to-prune worktrees", "free up space", "delete old simulators"). File: `playbooks/worktree-cleanup.md`.
 - **Opening a PR.** Invoked at the end of every other playbook.

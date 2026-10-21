@@ -61,9 +61,29 @@ elif raw=$(gh pr list --author "@me" --state all --limit 1000 \
 fi
 [ -s "$prs" ] || echo "[]" > "$prs"
 
-# Transcripts dir: ~/.cursor/projects/<slugified-repo-path>/agent-transcripts.
-slug=$(printf '%s' "$main_wt" | sed 's#^/##; s#/#-#g')
-transcripts="$HOME/.cursor/projects/$slug/agent-transcripts"
+# Claude Code keeps one transcript dir per project, named for the project path
+# with every character other than a letter or digit replaced by "-". A chat
+# started in a worktree writes to that worktree's own dir. A chat started in
+# the main checkout, its subagents included, names the worktree's paths.
+projects="$HOME/.claude/projects"
+slug() { printf '%s' "$1" | sed 's/[^a-zA-Z0-9]/-/g'; }
+main_chats="$projects/$(slug "$main_wt")"
+mtime() { stat -c '%Y' "$1" 2>/dev/null || stat -f '%m' "$1" 2>/dev/null; }
+mentions() {
+	if command -v rg >/dev/null 2>&1; then rg -l -F -e "$1/" -e "$1\"" "$2" 2>/dev/null
+	else grep -rlF -e "$1/" -e "$1\"" "$2" 2>/dev/null; fi
+}
+day() { date -r "$1" '+%Y-%m-%d' 2>/dev/null || date -d "@$1" '+%Y-%m-%d'; }
+
+# OpenCode lists this project's top-level sessions with the directory each ran
+# in. A subagent working in a worktree by path is not listed, so step 3 of the
+# playbook still reads transcripts for anything recent.
+sessions=$(mktemp)
+if command -v opencode >/dev/null 2>&1; then
+	opencode session list --format json -n 1000 > "$sessions" 2>/dev/null \
+		|| echo "warn: opencode session list failed; LAST_CHAT omits OpenCode sessions" >&2
+fi
+[ -s "$sessions" ] || echo "[]" > "$sessions"
 now=$(date +%s)
 
 echo "# base: $base"
@@ -103,12 +123,18 @@ git worktree list --porcelain | awk '/^worktree /{print $2}' | while read -r wt;
 	# Most recent chat whose transcript operated in this worktree. Match path
 	# followed by "/" or a quote so glint-482 does not match glint-482-r37.
 	last="-"; last_ts=0
-	if [ -d "$transcripts" ]; then
-		f=$(rg -l -e "${wt}/" -e "${wt}\"" "$transcripts" 2>/dev/null \
-			| xargs stat -f '%m %N' 2>/dev/null | sort -rn | head -1)
-		if [ -n "$f" ]; then last_ts=$(echo "$f" | awk '{print $1}')
-			last=$(date -r "$last_ts" '+%Y-%m-%d' 2>/dev/null); fi
-	fi
+	while IFS= read -r f; do
+		[ -n "$f" ] || continue
+		ts=$(mtime "$f")
+		[ "${ts:-0}" -gt "$last_ts" ] && last_ts=$ts
+	done <<-CHATS
+	$(ls -t "$projects/$(slug "$wt")"/*.jsonl 2>/dev/null | head -1
+	[ -d "$main_chats" ] && mentions "$wt" "$main_chats")
+	CHATS
+	ts=$(jq -r --arg w "$wt" '[.[] | (.directory // "") as $d | select($d == $w or ($d | startswith($w + "/"))) | .updated]
+		| (max // 0) / 1000 | floor' "$sessions" 2>/dev/null)
+	[ "${ts:-0}" -gt "$last_ts" ] && last_ts=$ts
+	[ "$last_ts" -gt 0 ] && last=$(day "$last_ts")
 	recent=$([ "$last_ts" -gt 0 ] 2>/dev/null && [ $(( (now - last_ts) / 86400 )) -le 4 ] && echo yes || echo no)
 
 	case "$dirty" in wip:*) bucket=hold-wip ;; *)
@@ -123,4 +149,4 @@ git worktree list --porcelain | awk '/^worktree /{print $2}' | while read -r wt;
 		"$size" "$age" "$merged" "$dirty" "$remote" "$pr" "$last" "$bucket" "$wt"
 done | sort -t$'\t' -k1,1 -rh
 
-rm -f "$prs"
+rm -f "$prs" "$sessions"
