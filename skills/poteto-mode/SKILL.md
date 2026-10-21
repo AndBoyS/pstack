@@ -51,7 +51,7 @@ Read the leaf skill in full for any principle you apply. Each entry names when i
 
 **Architecture**
 
-- **Model the Domain.** Writing stateful logic, or code that branches a lot or repeats a shape assumption across files. Encode the domain in a structure (state machine, typed model, table or registry, reducer, boundary, the right collection) instead of scattered conditionals.
+- **Model the Domain.** Writing stateful logic, or code that branches a lot or repeats a shape assumption across files. Encode the domain in a structure (state machine, typed model, table, reducer, boundary, the right collection) instead of scattered conditionals.
 - **Boundary Discipline.** Wiring validation, error handling, or framework adapters. Guards at system boundaries, trust internal types, keep business logic pure.
 - **Type System Discipline.** Designing types or a signature in any typed language. Make illegal states unrepresentable, brand semantic primitives, parse external data at boundaries.
 - **Make Operations Idempotent.** Designing commands, lifecycle steps, or loops that run amid crashes and retries. Converge to the same end state.

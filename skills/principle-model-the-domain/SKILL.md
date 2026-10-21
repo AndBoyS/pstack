@@ -12,7 +12,7 @@ Reach for:
 
 - A state machine instead of scattered booleans, phases, or lifecycle checks.
 - A typed model instead of loose parameters or repeated shape assumptions.
-- A map, registry, lookup table, or discriminated union instead of branching spread across files.
+- A map or lookup table defined in one place, or a discriminated union, instead of branching spread across files.
 - A reducer or command/event model instead of ad hoc state mutations.
 - A module organized around one body of domain knowledge instead of a sequence such as load, validate, transform, and save. Execution order is not ownership.
 - A small module boundary that gathers repeated behavior, ownership, or invariants.
@@ -20,6 +20,8 @@ Reach for:
 - Any other structure that fits. When none fits, work out what the code must never allow and how the data gets read, then find the structure that encodes exactly that.
 
 Use a discriminated union when the states exclude each other and carry different data, such as loading, ready, and failed. When features combine freely, use one flat struct with a field or flag for each feature. For example, an entity can be visible, solid, and animated in any mix. Code that needs one feature reads one field instead of switching over every variant. Keep the flags independent. Flags that must change together are one state, so model them as a union or a state machine. When variants share their fields and the code treats them alike, use one struct with a `kind` field.
+
+A structure that makes adding a variant cheap makes adding an operation costly, and the reverse. Choose for the change the code gets more often.
 
 Do not force an abstraction. Prefer boring code if the current shape is already clear, local, and unlikely to grow. Be skeptical of an abstraction that adds indirection without removing branches, duplicated rules, invalid states, or lifecycle risk.
 
