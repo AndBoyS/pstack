@@ -12,7 +12,7 @@ Plain data with free functions in one module is not a shallow module when its la
 
 Look for these signs:
 
-- Callers coordinate several methods to complete one operation.
+- Callers coordinate several calls to complete one operation.
 - Public options expose internal stages or implementation choices.
 - Learning the interface does not save the caller from learning the implementation.
 
@@ -26,7 +26,7 @@ Public re-exports of transport or wire types are leakage. Parse external data in
 
 Temporal decomposition organizes modules by execution order instead of the knowledge they own. Separate load, validate, transform, and save stages often repeat one representation and its invariants across several boundaries.
 
-Group code around domain knowledge and ownership. Methods that run at different times can still belong to one module when they protect the same decisions.
+Group code around domain knowledge and ownership. Functions that run at different times can still belong to one module when they protect the same decisions.
 
 ## Pass-through method
 
